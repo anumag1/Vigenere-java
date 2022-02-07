@@ -78,7 +78,9 @@ public class Vigenere {
 
     private void setFullKey(String mess) {
         if (mess.length() >= key.length()) {
-            fullKey.append(key.repeat((mess.length() / key.length())));
+            for (int i = 0; i < (mess.length() / key.length()); i++) {
+                fullKey.append(key);
+            }
 
             for (int j = 0; j < (mess.length() % key.length()); j++) {
                 fullKey.append(key.charAt(j));
