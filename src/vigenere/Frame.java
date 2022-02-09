@@ -1,15 +1,10 @@
 package vigenere;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Frame {
     private final JFrame mainFrame;
-    private final JTextField inputMessage;
-    private final JTextField inputEncryptedMessage;
-    private final JTextField inputKey;
-    private final JTextField inputKey2;
-    private final JTextField encryptionOutput;
-    private final JTextField decryptionOutput;
     private final JCheckBox uaUA;
     private final JCheckBox ruRU;
     private final JCheckBox enEN;
@@ -17,54 +12,65 @@ public class Frame {
     public Frame() {
         mainFrame = new JFrame();
         mainFrame.setTitle("Vigenere");
-        mainFrame.setSize(700, 700);
+        mainFrame.setSize(500, 360);
         mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        mainFrame.setLayout(new BorderLayout());
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setResizable(false);
 
-        JPanel mainPanel = new JPanel();
-        JPanel alphabetPanel = new JPanel();
-        JPanel encryptPanel = new JPanel();
-        JPanel decryptPanel = new JPanel();
-        JPanel encryptOutputPanel = new JPanel();
-        JPanel decryptOutputPanel = new JPanel();
-        JPanel headerPanel = new JPanel();
+        JLabel head = new JLabel("Шифр Віженера");
+        head.setFont(new Font("Serif", Font.BOLD, 20));
 
-        JLabel label = new JLabel("Шифр Віженера");
-        headerPanel.add(label);
+        JButton encryptButton = new JButton("Зашифрувати");
+
+        JTextArea output = new JTextArea(5, 21);
+        output.setEditable(false);
+        JScrollPane paneOut = new JScrollPane(output);
+
+        JTextArea inputMessage = new JTextArea("Введіть повідомлення", 5, 21);
+        JScrollPane paneInMessage = new JScrollPane(inputMessage);
+
+        JTextArea inputKey = new JTextArea("Введіть ключ", 3, 21);
+        JScrollPane paneInKey = new JScrollPane(inputKey);
+
+        JButton decryptButton = new JButton("Розшифрувати");
 
         uaUA = new JCheckBox("Український алфавіт");
         ruRU = new JCheckBox("Російський алфавіт");
         enEN = new JCheckBox("Англійський алфавіт");
-        alphabetPanel.add(uaUA);
-        alphabetPanel.add(ruRU);
-        alphabetPanel.add(enEN);
 
-        inputMessage = new JTextField("Введіть повідомлення");
-        inputKey = new JTextField("Введіть ключ");
-        JButton encryptButton = new JButton("Зашифрувати");
-        encryptPanel.add(inputMessage);
-        encryptPanel.add(inputKey);
-        encryptPanel.add(encryptButton);
+        JPanel header = new JPanel();
+        header.setBorder(BorderFactory.createLineBorder(Color.black));
+        header.add(head);
 
-        encryptionOutput = new JTextField("Зашифроване повідомлення", 16);
-        encryptOutputPanel.add(encryptionOutput);
-        decryptionOutput = new JTextField("Розшифроване повідомлення", 16);
-        decryptOutputPanel.add(decryptionOutput);
+        JPanel alphabets = new JPanel();
+        alphabets.setLayout(new GridBagLayout());
+        GridBagConstraints alpha = new GridBagConstraints();
+        alpha.fill = GridBagConstraints.HORIZONTAL;
+        alpha.gridy = 0;
+        alpha.gridx = 0;
+        alphabets.add(uaUA, alpha);
+        alpha.gridy = 1;
+        alphabets.add(ruRU, alpha);
+        alpha.gridy = 2;
+        alphabets.add(enEN, alpha);
 
-        inputEncryptedMessage = new JTextField("Введіть зашифроване повідомлення");
-        inputKey2 = new JTextField("Введіть ключ");
-        JButton decryptButton = new JButton("Розшифрувати");
-        decryptPanel.add(inputEncryptedMessage);
-        decryptPanel.add(inputKey2);
-        decryptPanel.add(decryptButton);
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
 
-        mainPanel.add(headerPanel);
-        mainPanel.add(alphabetPanel);
-        mainPanel.add(encryptPanel);
-        mainPanel.add(encryptOutputPanel);
-        mainPanel.add(decryptPanel);
-        mainPanel.add(decryptOutputPanel);
+        JPanel cipher = new JPanel();
 
-        mainFrame.add(mainPanel);
+        cipher.add(paneInMessage);
+        cipher.add(paneInKey);
+        cipher.add(encryptButton);
+        cipher.add(decryptButton);
+        cipher.add(paneOut);
+
+        mainPanel.add(alphabets, BorderLayout.WEST);
+        mainPanel.add(cipher, BorderLayout.CENTER);
+
+        mainFrame.add(header, BorderLayout.PAGE_START);
+        mainFrame.add(mainPanel, BorderLayout.CENTER);
 
         mainFrame.setVisible(true);
 
@@ -102,7 +108,9 @@ public class Frame {
                     vig.setMessage(message);
                     vig.setKey(key);
 
-                    encryptionOutput.setText(vig.encrypt());
+                    String out = vig.encrypt();
+                    out = out.replaceAll("(.{20})", "$1\n");
+                    output.setText(out);
                     mainFrame.revalidate();
                 }
             }
@@ -128,9 +136,9 @@ public class Frame {
             if (countAlphabets == 0) {
                 JOptionPane.showMessageDialog(mainFrame, "Ви маєте вибрати хоча б один алфавіт!");
             } else {
-                String message = inputEncryptedMessage.getText();
+                String message = inputMessage.getText();
                 message = message.replaceAll("\\s+", "");
-                String key = inputKey2.getText();
+                String key = inputKey.getText();
                 key = key.replaceAll("\\s+", "");
                 if (key.length() == 0) {
                     JOptionPane.showMessageDialog(mainFrame, "Поле з ключем не має бути пустим!");
@@ -140,7 +148,9 @@ public class Frame {
                     vig.setEncryptedMessage(message);
                     vig.setKey(key);
 
-                    decryptionOutput.setText(vig.decrypt());
+                    String out = vig.decrypt();
+                    out = out.replaceAll("(.{20})", "$1\n");
+                    output.setText(out);
                     mainFrame.revalidate();
                 }
             }
